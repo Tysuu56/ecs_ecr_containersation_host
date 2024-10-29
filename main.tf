@@ -12,9 +12,9 @@ resource "aws_ecs_cluster" "my_ecs_cluster" {
   name = var.ecs_cluster_name
 }
 
-# Create IAM Role for ECS Task Execution
+
 resource "aws_iam_role" "ecs_execution_role" {
-  name = var.ecs_execution_role_name
+  name = "ecs_execution_role"
 
   assume_role_policy = jsonencode({
     Version = "2012-10-17"
@@ -33,7 +33,8 @@ resource "aws_iam_role" "ecs_execution_role" {
 resource "aws_iam_policy_attachment" "ecs_execution_policy" {
   name       = "ecs_execution_policy_attachment"
   roles      = [aws_iam_role.ecs_execution_role.name]
-  policy_arn = "arn:aws:iam::aws:policy/service-role/AmazonECSTaskExecutionRolePolicy"
+  policy_arn = "arn:aws:iam::aws:policy/service-role/AmazonECSTaskExecutionRolePolicy"resource "aws_iam_policy_attachment" "ecs_execution_policy" 
+ 
 }
 
 # Step 4: Define Task Definition

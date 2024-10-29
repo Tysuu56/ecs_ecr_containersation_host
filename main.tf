@@ -11,24 +11,6 @@ resource "aws_ecr_repository" "my_ecr" {
 resource "aws_ecs_cluster" "my_ecs_cluster" {
   name = var.ecs_cluster_name
 }
-{
-  "Version": "2012-10-17",
-  "Statement": [
-    {
-      "Effect": "Allow",
-      "Action": [
-        "ec2:RevokeSecurityGroupEgress",
-        "ec2:AuthorizeSecurityGroupEgress",
-        "ec2:DescribeSecurityGroups",
-        "ec2:CreateSecurityGroup",
-        "ec2:DeleteSecurityGroup",
-        "ec2:ModifySecurityGroupRules"
-      ],
-      "Resource": "*"
-    }
-  ]
-}
-
 
 # Create IAM Role for ECS Task Execution
 resource "aws_iam_role" "ecs_execution_role" {
@@ -128,4 +110,3 @@ output "ecs_cluster_name" {
   description = "ECS Cluster Name"
   value       = aws_ecs_cluster.my_ecs_cluster.name
 }
-

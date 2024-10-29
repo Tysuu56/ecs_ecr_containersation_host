@@ -12,7 +12,7 @@ resource "aws_ecs_cluster" "my_ecs_cluster" {
   name = var.ecs_cluster_name
 }
 
-
+# Create IAM Role for ECS Task Execution
 resource "aws_iam_role" "ecs_execution_role" {
   name = "ecs_execution_role"
 
@@ -30,11 +30,11 @@ resource "aws_iam_role" "ecs_execution_role" {
   })
 }
 
+# Create IAM Policy Attachment for ECS Execution Role
 resource "aws_iam_policy_attachment" "ecs_execution_policy" {
   name       = "ecs_execution_policy_attachment"
   roles      = [aws_iam_role.ecs_execution_role.name]
-  policy_arn = "arn:aws:iam::aws:policy/service-role/AmazonECSTaskExecutionRolePolicy"resource "aws_iam_policy_attachment" "ecs_execution_policy" 
- 
+  policy_arn = "arn:aws:iam::aws:policy/service-role/AmazonECSTaskExecutionRolePolicy"
 }
 
 # Step 4: Define Task Definition
@@ -87,12 +87,14 @@ resource "aws_ecs_service" "my_service" {
 # Create Security Group for ECS Task
 resource "aws_security_group" "ecs_security_group" {
   vpc_id = var.vpc_id
+
   ingress {
     from_port   = var.container_port
     to_port     = var.container_port
     protocol    = "tcp"
     cidr_blocks = ["0.0.0.0/0"]
   }
+  
   egress {
     from_port   = 0
     to_port     = 0

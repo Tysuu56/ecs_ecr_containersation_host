@@ -12,28 +12,14 @@ resource "aws_ecs_cluster" "my_ecs_cluster" {
   name = var.ecs_cluster_name
 }
 
-# Create IAM Role for ECS Task Execution
-resource "aws_iam_role" "ecs_execution_role" {
-  name = "ecs_execution_role"
-
-  assume_role_policy = jsonencode({
-    Version = "2012-10-17"
-    Statement = [
-      {
-        Action    = "sts:AssumeRole"
-        Effect    = "Allow"
-        Principal = {
-          Service = "ecs-tasks.amazonaws.com"
-        }
-      },
-    ]
-  })
+# Data block to reference the existing IAM role
+data "aws_iam_role" "ecs_execution_role" {
+  name = "ecs_execution_role"  # Use the name of the existing IAM role
 }
 
-# Create IAM Policy Attachment for ECS Execution Role
 resource "aws_iam_policy_attachment" "ecs_execution_policy" {
   name       = "ecs_execution_policy_attachment"
-  roles      = [aws_iam_role.ecs_execution_role.name]
+  roles      = [data.aws_iam_role.ecs_execution_role.name]
   policy_arn = "arn:aws:iam::aws:policy/service-role/AmazonECSTaskExecutionRolePolicy"
 }
 
@@ -44,7 +30,7 @@ resource "aws_ecs_task_definition" "my_task" {
   network_mode             = "awsvpc"
   cpu                      = var.task_cpu
   memory                   = var.task_memory
-  execution_role_arn       = aws_iam_role.ecs_execution_role.arn
+  execution_role_arn       = data.aws_iam_role.ecs_execution_role.arn
 
   container_definitions = jsonencode([{
     name      = var.container_name
@@ -87,14 +73,12 @@ resource "aws_ecs_service" "my_service" {
 # Create Security Group for ECS Task
 resource "aws_security_group" "ecs_security_group" {
   vpc_id = var.vpc_id
-
   ingress {
     from_port   = var.container_port
     to_port     = var.container_port
     protocol    = "tcp"
     cidr_blocks = ["0.0.0.0/0"]
   }
-  
   egress {
     from_port   = 0
     to_port     = 0
